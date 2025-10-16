@@ -1,46 +1,41 @@
-# Aurora documentation downloader
+# Aurora routine workspace
 
-This repository contains a small helper script for downloading the public
-[Aurora framework documentation](https://docs.aurora-wow.wtf/) so that it can
-be browsed offline.
+This repository is a sandbox for building and testing routines with the
+[Aurora framework](https://aurorabot.app/). It ships with a mirrored copy of the
+public documentation so you can reference the APIs while you work, but the
+project itself is focused on code rather than documentation scraping.
 
-Because the automated evaluation environment is sandboxed and blocks outbound
-network access, the script is not executed as part of the tests. Run it on your
-local machine (or anywhere with internet access) to mirror the site:
+## Repository layout
 
-```bash
-python3 scripts/download_aurora_docs.py aurora-docs
-```
+The important top-level directories are:
 
-By default, it will crawl every HTML page served from
-`https://docs.aurora-wow.wtf/`, save them into the target directory, and follow
-links that point to the same host. Assets referenced via `src` or `href`
-attributes (images, stylesheets, JavaScript files) are also downloaded, which
-should make the offline copy functional.
+| Path | Purpose |
+| ---- | ------- |
+| `scripts/AuroraRoutines/` | Sample routines, load order metadata, and other runtime helpers. |
+| `scripts/download_aurora_docs.py` | Utility script for refreshing the offline documentation mirror. |
+| `data/` | Input data used by tooling (for example the curated best practices path list). |
+| `docs/` | Markdown notes maintained alongside the codebase, including best practices and the changelog. |
+| `offline-docs/` | Static HTML export of the official Aurora documentation kept for quick reference. |
 
-If you would rather store the documentation alongside your code as Markdown,
-enable the Markdown export mode. The crawler will mirror the same pages but
-convert each HTML document into Markdown with YAML front matter that records the
-source URL:
+## Working with the offline docs
 
-```bash
-python3 scripts/download_aurora_docs.py docs/best-practices \
-  --format markdown \
-  --paths-file data/best_practices_paths.txt \
-  --no-follow
-```
-
-The optional `--paths-file` flag seeds the crawler with specific documentation
-paths so you can focus on a curated set such as the framework best practices
-without traversing the entire site. Combine it with `--no-follow` to avoid
-pulling in additional sections while still downloading embedded images.
-
-If the documentation ever moves to a different domain you can point the script
-at the new base URL:
+The mirrored site lives under `offline-docs/`. The HTML was captured directly
+from the live documentation and assumes it is served from the web root. To
+browse it locally you can point a tiny HTTP server at the directory:
 
 ```bash
-python3 scripts/download_aurora_docs.py aurora-docs --base-url https://new-domain/
+python3 -m http.server --directory offline-docs 9000
 ```
 
-The script prints the mapping between remote URLs and local files while it
-runs, making it easy to troubleshoot any broken pages or missing resources.
+and then open <http://localhost:9000/> in your browser.
+
+To update the mirror, run the downloader script from a machine with internet
+access:
+
+```bash
+python3 scripts/download_aurora_docs.py offline-docs
+```
+
+The script prints every fetched URL as it runs, making it straightforward to
+spot missing pages or assets. Pass `--format markdown` if you want to refresh
+the Markdown notes under `docs/best-practices/` instead.
