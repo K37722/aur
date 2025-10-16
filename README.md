@@ -89,16 +89,17 @@ function YourNamespace.DoSomething()
 end
 ```
 
-When you're ready to test, launch the client and run `/aur load <Namespace>`
-(for example `/aur load Windwalker`) to bring your routine into the game. Repeat
-the process for any other spec by adjusting the namespace and file structure to
-match.
+When you're ready to test, launch the client and run `/aur load <Namespace>`.
+This repository ships with a Windwalker routine that registers itself as
+`Windwalker`, so you can load it with `/aur load Windwalker`. Repeat the process
+for any other spec by adjusting the namespace and file structure to match.
 
 ## Working with the offline docs
 
 The mirrored site lives under `offline-docs/`. The HTML was captured directly
-from the live documentation and assumes it is served from the web root. To
-browse it locally you can point a tiny HTTP server at the directory:
+from the live documentation and assumes it is served from the web root. Because
+the full copy is already committed to this repository you can browse it offline
+without downloading anything. Point a tiny HTTP server at the directory:
 
 ```bash
 python3 -m http.server --directory offline-docs 9000

@@ -1,8 +1,10 @@
 # Aurora best practice documentation bundle
 
 This directory is intended to store a Markdown export of the Aurora framework
-best practice guides. Because the automated evaluation environment cannot reach
-the public documentation site, the content is not checked into the repository.
+best practice guides. The repository already includes a complete HTML mirror of
+the public documentation under `offline-docs/`, so you can browse the content
+immediately. Use this folder when you want a Markdown version that can be
+annotated alongside the codebase.
 
 Use the downloader script to mirror the curated set of pages listed in
 `data/best_practices_paths.txt` into this folder:
