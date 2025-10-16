@@ -401,7 +401,7 @@ def crawl(
 
 def parse_args(argv: list[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Download the Aurora documentation for offline viewing")
-    parser.add_argument("output", nargs="?", default="aurora_docs", help="Directory to store the downloaded files")
+    parser.add_argument("output", nargs="?", default="offline-docs", help="Directory to store the downloaded files")
     parser.add_argument("--base-url", default="https://docs.aurora-wow.wtf/", help="Root documentation URL to crawl")
     parser.add_argument("--format", choices=["html", "markdown"], default="html", help="Format used to save HTML documents")
     parser.add_argument("--paths-file", help="File that lists documentation paths to download (one per line)")
