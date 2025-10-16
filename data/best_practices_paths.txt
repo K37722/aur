@@ -1,0 +1,11 @@
+# Subset of Aurora documentation pages that cover recommended setup and workflow best practices.
+getting-started/recommended-addons/
+getting-started/callbacks/
+getting-started/spells/
+getting-started/registeringrotation/
+category/getting-started/
+category/utility-functions/
+category/hooks/
+category/statusframe/
+missiles/overview/
+interface/overview/
