@@ -105,8 +105,57 @@ def fetch(url: str, referer: str | None) -> tuple[bytes, str]:
         return data, content_type
 
 
+def normalize_content_type(content_type: str) -> str:
+    return content_type.split(";", 1)[0].strip().lower()
+
+
 def should_parse_html(content_type: str) -> bool:
-    return content_type.split(";", 1)[0].strip().lower() == "text/html"
+    return normalize_content_type(content_type) == "text/html"
+
+
+def should_parse_js(content_type: str) -> bool:
+    normalized = normalize_content_type(content_type)
+    return normalized in {
+        "application/javascript",
+        "application/x-javascript",
+        "text/javascript",
+    } or normalized.endswith("+javascript")
+
+
+JS_CHUNK_PATTERN = re.compile(
+    r'"assets/js/"\+\(\{([^}]*)\}\[e\]\|\|e\)\+"\."\+\{([^}]*)\}\[e\]\+"\.js"',
+    flags=re.DOTALL,
+)
+
+JS_STRING_PATTERN = re.compile(r'["\']/?(assets/js/[\w./-]+?\.js)["\']')
+
+
+def _parse_chunk_map(raw: str) -> dict[int, str]:
+    entries: dict[int, str] = {}
+    for entry in raw.split(","):
+        if not entry or ":" not in entry:
+            continue
+        key, value = entry.split(":", 1)
+        key = key.strip()
+        value = value.strip().strip('"')
+        try:
+            entries[int(key)] = value
+        except ValueError:
+            continue
+    return entries
+
+
+def extract_js_dependencies(js_text: str) -> set[str]:
+    dependencies: set[str] = set()
+    for match in JS_CHUNK_PATTERN.finditer(js_text):
+        names_map = _parse_chunk_map(match.group(1))
+        hashes_map = _parse_chunk_map(match.group(2))
+        for key, hashed in hashes_map.items():
+            name = names_map.get(key, str(key))
+            dependencies.add(f"assets/js/{name}.{hashed}.js")
+    for match in JS_STRING_PATTERN.finditer(js_text):
+        dependencies.add(match.group(1))
+    return dependencies
 
 
 @dataclass
@@ -395,6 +444,16 @@ def crawl(
                 if output_format == "markdown" and tag in {"link", "script"}:
                     continue
                 if not follow_links and tag == "a":
+                    continue
+                queue.append(CrawlItem(candidate, item.url))
+        if should_parse_js(content_type):
+            try:
+                js_text = data.decode("utf-8", errors="ignore")
+            except Exception:
+                js_text = ""
+            for dependency in extract_js_dependencies(js_text):
+                candidate = resolve_candidate(item.url, base_netloc, dependency)
+                if not candidate or candidate in seen:
                     continue
                 queue.append(CrawlItem(candidate, item.url))
 
