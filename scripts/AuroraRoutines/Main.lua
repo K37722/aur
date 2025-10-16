@@ -1,7 +1,7 @@
 local Aurora, namespace, Environment = ...
 
 namespace = namespace or {}
-namespace.name = namespace.name or "WindwalkerRetail"
+namespace.name = namespace.name or "Windwalker"
 namespace.class = "MONK"
 namespace.spec = 3
 namespace.Aurora = Aurora
