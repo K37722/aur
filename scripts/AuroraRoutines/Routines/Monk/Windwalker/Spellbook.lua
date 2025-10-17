@@ -1,5 +1,12 @@
 local Aurora, namespace = ...
 
+if namespace == nil and Aurora and Aurora.Aurora then
+  namespace = Aurora
+  Aurora = namespace.Aurora
+elseif Aurora == nil and namespace and namespace.Aurora then
+  Aurora = namespace.Aurora
+end
+
 local NewSpell = Aurora.SpellHandler.NewSpell
 
 local spells = {
